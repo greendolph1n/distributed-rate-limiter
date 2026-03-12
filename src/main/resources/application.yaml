@@ -2,6 +2,11 @@ spring:
   application:
     name: ratelimiter
 
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
 ratelimiter:
   capacity: 3
   refill-rate: 0.3
