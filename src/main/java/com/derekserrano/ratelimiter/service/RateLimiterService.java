@@ -1,5 +1,6 @@
 package com.derekserrano.ratelimiter.service;
 
+import com.derekserrano.ratelimiter.config.RateLimiterProperties;
 import com.derekserrano.ratelimiter.model.RateLimitResult;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -13,14 +14,18 @@ public class RateLimiterService {
 
     private final StringRedisTemplate redisTemplate;
 
-    private final DefaultRedisScript<Long> script;
+    private final DefaultRedisScript<List> script;
 
-    public RateLimiterService(StringRedisTemplate redisTemplate) {
+    private final RateLimiterProperties properties;
+
+    public RateLimiterService(StringRedisTemplate redisTemplate,
+                              RateLimiterProperties properties) {
         this.redisTemplate = redisTemplate;
+        this.properties = properties;
 
-        script = new DefaultRedisScript<>();
+        script = new DefaultRedisScript<List>();
         script.setLocation(new ClassPathResource("scripts/token_bucket.lua"));
-        script.setResultType(Long.class);
+        script.setResultType(List.class);
     }
 
     public RateLimitResult allowRequest(String userId) {
@@ -29,17 +34,17 @@ public class RateLimiterService {
 
         List<String> keys = List.of(key);
 
-        Long result = redisTemplate.execute(
+        List<Long> result = redisTemplate.execute(
                 script,
-                keys,
-                "10",   // capacity
-                "0.1",  // refill rate
+                List.of(key),
+                String.valueOf(properties.getCapacity()),
+                String.valueOf(properties.getRefillRate()),
                 String.valueOf(System.currentTimeMillis() / 1000)
         );
-        boolean allowed = result != null && result == 1;
 
-        long remaining = 0;
-        long reset = System.currentTimeMillis() / 1000 + 10;
+        boolean allowed = result.get(0) == 1;
+        long remaining = result.get(1);
+        long reset = result.get(2);
 
         return new RateLimitResult(allowed, remaining, reset);
     }

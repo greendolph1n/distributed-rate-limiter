@@ -1,5 +1,6 @@
 package com.derekserrano.ratelimiter.interceptor;
 
+import com.derekserrano.ratelimiter.config.RateLimiterProperties;
 import com.derekserrano.ratelimiter.model.RateLimitResult;
 import com.derekserrano.ratelimiter.service.RateLimiterService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,9 +12,11 @@ import org.springframework.web.servlet.HandlerInterceptor;
 public class RateLimitInterceptor implements HandlerInterceptor {
 
     private final RateLimiterService rateLimiterService;
+    private final RateLimiterProperties rateLimiterProperties;
 
-    public RateLimitInterceptor(RateLimiterService rateLimiterService) {
+    public RateLimitInterceptor(RateLimiterService rateLimiterService, RateLimiterProperties rateLimiterProperties) {
         this.rateLimiterService = rateLimiterService;
+        this.rateLimiterProperties = rateLimiterProperties;
     }
 
     @Override
@@ -27,16 +30,16 @@ public class RateLimitInterceptor implements HandlerInterceptor {
             userId = "anonymous";
         }
 
-        RateLimitResult allowed = rateLimiterService.allowRequest(userId);
-        long remainingTokens = allowed.getRemainingTokens();
-        long resetTime = allowed.getResetTime();
+        RateLimitResult result = rateLimiterService.allowRequest(userId);
 
-        if (!allowed.isAllowed()) {
+        response.setHeader("X-RateLimit-Limit", String.valueOf(rateLimiterProperties.getCapacity()));
+        response.setHeader("X-RateLimit-Remaining", String.valueOf(result.getRemainingTokens()));
+        response.setHeader("X-RateLimit-Reset", String.valueOf(result.getResetTime()));
+
+
+        if (!result.isAllowed()) {
             response.setStatus(429);
             response.getWriter().write("Rate limit exceeded");
-            response.setHeader("X-RateLimit-Limit", "10");
-            response.setHeader("X-RateLimit-Remaining", String.valueOf(remainingTokens));
-            response.setHeader("X-RateLimit-Reset", String.valueOf(resetTime));
             return false;
         }
 
