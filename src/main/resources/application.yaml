@@ -9,3 +9,6 @@ spring:
 ratelimiter:
   capacity: 3
   refill-rate: 0.3
+
+  server:
+    port: ${PORT:8080}
