@@ -68,3 +68,7 @@ Example request:
 ```
 curl -i localhost:8080/api/test -H “X-User-Id: user1”
 ```
+
+## Author
+
+Derek Serrano
