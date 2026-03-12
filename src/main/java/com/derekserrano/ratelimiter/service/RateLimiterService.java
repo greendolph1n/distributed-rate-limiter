@@ -1,5 +1,6 @@
 package com.derekserrano.ratelimiter.service;
 
+import com.derekserrano.ratelimiter.model.RateLimitResult;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -22,7 +23,7 @@ public class RateLimiterService {
         script.setResultType(Long.class);
     }
 
-    public boolean allowRequest(String userId) {
+    public RateLimitResult allowRequest(String userId) {
 
         String key = "bucket:" + userId;
 
@@ -35,7 +36,11 @@ public class RateLimiterService {
                 "0.1",  // refill rate
                 String.valueOf(System.currentTimeMillis() / 1000)
         );
+        boolean allowed = result != null && result == 1;
 
-        return result != null && result == 1;
+        long remaining = 0;
+        long reset = System.currentTimeMillis() / 1000 + 10;
+
+        return new RateLimitResult(allowed, remaining, reset);
     }
 }

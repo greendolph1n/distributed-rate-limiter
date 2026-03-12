@@ -1,5 +1,6 @@
 package com.derekserrano.ratelimiter.interceptor;
 
+import com.derekserrano.ratelimiter.model.RateLimitResult;
 import com.derekserrano.ratelimiter.service.RateLimiterService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,11 +27,16 @@ public class RateLimitInterceptor implements HandlerInterceptor {
             userId = "anonymous";
         }
 
-        boolean allowed = rateLimiterService.allowRequest(userId);
+        RateLimitResult allowed = rateLimiterService.allowRequest(userId);
+        long remainingTokens = allowed.getRemainingTokens();
+        long resetTime = allowed.getResetTime();
 
-        if (!allowed) {
+        if (!allowed.isAllowed()) {
             response.setStatus(429);
             response.getWriter().write("Rate limit exceeded");
+            response.setHeader("X-RateLimit-Limit", "10");
+            response.setHeader("X-RateLimit-Remaining", String.valueOf(remainingTokens));
+            response.setHeader("X-RateLimit-Reset", String.valueOf(resetTime));
             return false;
         }
 
