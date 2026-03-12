@@ -36,9 +36,11 @@ Redis maintains the bucket state for each user so rate limits remain consistent 
 ---
 
 ## Rate Limiting Headers
+```
 X-RateLimit-Limit
 X-RateLimit-Remaining
 X-RateLimit-Reset
+```
 
 ---
 
