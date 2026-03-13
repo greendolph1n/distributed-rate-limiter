@@ -6,6 +6,22 @@ This project demonstrates how production systems enforce request quotas across m
 
 ---
 
+## Live API
+
+https://distributed-rate-limiter-7pn5.onrender.com
+
+## Example API Request
+```
+GET /api/test
+```
+
+Example response headers:
+```
+X-RateLimit-Limit: 3
+X-RateLimit-Remaining: 2
+X-RateLimit-Reset: 1711212000
+```
+
 ## Architecture
 
 Client requests pass through a Spring interceptor before reaching the API endpoint.
