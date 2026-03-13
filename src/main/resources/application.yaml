@@ -7,8 +7,8 @@ spring:
       url: ${REDIS_URL:redis://localhost:6379}
 
 ratelimiter:
-  capacity: 3
-  refill-rate: 0.3
+  capacity: 5
+  refill-rate: 0.5
 
   server:
     port: ${PORT:8080}

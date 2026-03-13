@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Distributed Rate Limiter</title>
+
+    <style>
+
+        body{
+            font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+            background:#f5f7fa;
+            margin:0;
+        }
+
+        .container{
+            max-width:720px;
+            margin:100px auto;
+            padding:40px;
+            background:white;
+            border-radius:10px;
+            box-shadow:0 5px 25px rgba(0,0,0,0.08);
+        }
+
+        h1{
+            margin-top:0;
+        }
+
+        p{
+            color:#555;
+        }
+
+        code{
+            background:#f1f1f1;
+            padding:6px 10px;
+            border-radius:6px;
+        }
+
+        pre{
+            background:#1e1e1e;
+            color:#eee;
+            padding:16px;
+            border-radius:8px;
+            overflow-x:auto;
+        }
+
+        button{
+            margin-top:10px;
+            padding:12px 20px;
+            border:none;
+            border-radius:6px;
+            background:#2d6cdf;
+            color:white;
+            font-size:15px;
+            cursor:pointer;
+        }
+
+        button:hover{
+            background:#1f56b8;
+        }
+
+        .result{
+            margin-top:20px;
+            padding:16px;
+            background:#f1f3f6;
+            border-radius:8px;
+            font-family:monospace;
+        }
+
+        input{
+            margin-top:10px;
+            padding:10px;
+            border-radius:6px;
+            border:1px solid #ddd;
+            font-size:14px;
+            margin-right:10px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Distributed Rate Limiter</h1>
+
+    <p>
+        A Redis-backed distributed rate limiter built with Spring Boot.
+    </p>
+
+    <h3>Endpoint</h3>
+
+    <code>/api/test</code>
+
+    <h3>Example Request</h3>
+
+    <pre>
+curl -i https://distributed-rate-limiter-7pn5.onrender.com/api/test \
+  -H "X-User-Id: user1"
+</pre>
+
+    <h3>Interactive Demo</h3>
+
+    <p>Click the button repeatedly to trigger the rate limiter.</p>
+
+    <label>User ID:</label>
+    <input id="userId" value="user1" />
+
+    <button onclick="sendRequest()">
+        Send Test Request
+    </button>
+
+    <div id="result" class="result">
+        No requests yet.
+    </div>
+
+</div>
+
+<script>
+
+    async function sendRequest(){
+
+        const userId = document.getElementById("userId").value;
+
+        const response = await fetch('/api/test', {
+            headers: { 'X-User-Id': userId }
+        });
+
+        const text = await response.text();
+
+        const limit = response.headers.get('X-RateLimit-Limit');
+        const remaining = response.headers.get('X-RateLimit-Remaining');
+        const resetEpoch = response.headers.get('X-RateLimit-Reset');
+        const resetDate = new Date(resetEpoch * 1000).toLocaleTimeString();
+        document.getElementById("result").innerText =
+            `User: ${userId}
+
+Response: ${text}
+
+Limit: ${limit}
+Remaining: ${remaining}
+Reset: ${resetDate}`;
+    }
+
+</script>
+
+</body>
+</html>
