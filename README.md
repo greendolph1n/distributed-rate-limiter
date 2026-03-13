@@ -8,7 +8,7 @@ This project demonstrates how production systems enforce request quotas across m
 
 ## Live API
 
-https://distributed-rate-limiter-7pn5.onrender.com
+https://limiter.derekserrano.dev
 
 ## Example API Request
 ```
