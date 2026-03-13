@@ -1,16 +1,16 @@
 # Distributed Rate Limiter
 
-A distributed API rate limiter built with **Java, Spring Boot, Redis, and Lua scripts** implementing the **Token Bucket algorithm**.
-
 This project demonstrates how production systems enforce request quotas across multiple service instances while maintaining atomic state using Redis.
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Render-46E3B7?logo=render)](https://distributed-rate-limiter-7pn5.onrender.com)
+
+![Java](https://img.shields.io/badge/Java-17-orange)
+![Spring Boot](https://img.shields.io/badge/SpringBoot-3.x-green?logo=springboot)
+![Redis](https://img.shields.io/badge/Redis-Distributed%20Storage-red?logo=redis)
+![Docker](https://img.shields.io/badge/Docker-Containerized-blue?logo=docker)
+![Distributed Systems](https://img.shields.io/badge/Architecture-Distributed%20Systems-purple)
+
 ---
-
-## Live API
-
-https://limiter.derekserrano.dev
-
-
 
 ## Example API Request
 ```
